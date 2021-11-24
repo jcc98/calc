@@ -20,16 +20,23 @@ export const ACTIONS:IACTIONS = {
   EVALUATE: "evaluate"
 }
 
+
+
 interface IType {
+  
+  overwrite: boolean,
   currentOperand: string,
   previousOperand: string,
   operation: string,
-  overwrite: boolean
-
+  type: string
+  payload: {
+    digit: string,
+    operation: string,
+  }
 }
 
 
-function reducer(state:any, action:any) {
+function reducer(state:IType, action:any):any {
   switch (action.type) {
     case ACTIONS.ADD_DIGIT:
       if (state.overwrite) {
@@ -42,13 +49,12 @@ function reducer(state:any, action:any) {
       if (action.payload.digit === "0" && state.currentOperand === "0") {
         return state
       }
-      if (action.payload.digit === "." && state.currentOperand.includes(".")) {
+      if (action.payload.digit === "." && state.currentOperand?.includes(".")) {
         return state
       }
-
       return {
         ...state,
-        currentOperand: `${state.currentOperand || ""}${action.payload.digit}`,
+        currentOperand: `${state.currentOperand || ""}${action.payload.digit}`
       }
     case ACTIONS.CHOOSE_OPERATION:
       if (state.currentOperand == null && state.previousOperand == null) {
@@ -154,14 +160,14 @@ function formatOperand(operand:string) {
 function App() {
 
 
-  const [{currentOperand, previousOperand, operation}, dispatch] = useReducer(reducer, {})
+  const [state, dispatch] = useReducer(reducer, {})
   
 
   return (
     <div className="calculator-grid">
       <div className="output">
-        <div className="previous-operand">{previousOperand} {operation}</div>
-        <div className="current-operand">{currentOperand}</div>
+        <div className="previous-operand">{formatOperand(state.previousOperand)} {state.operation}</div>
+        <div className="current-operand">{formatOperand(state.currentOperand)}</div>
       </div>
       <button
         className="span-two"
